@@ -22,6 +22,8 @@ const WHITE_ROOK = preload("res://Assets/white_rook.png")
 const TURN_BLACK = preload("res://Assets/turn-black.png")
 const TURN_WHITE = preload("res://Assets/turn-white.png")
 
+const PIECE_MOVE = preload("res://Assets/Piece_move.png")
+
 @onready var pieces = $Pieces
 @onready var dots = $Dots
 @onready var turn = $Turn
@@ -84,13 +86,33 @@ func display_board():
 				2: holder.texture = WHITE_KNIGHT
 				1: holder.texture = WHITE_PAWN
 
+func show_options():
+	moves = get_moves()
+	if moves == []:
+		state = false
+		return
+	show_dots()
+	
+func show_dots():
+	for i in moves:
+		var holder = TEXTURE_HOLDER.instantiate()
+		dots.add_child(holder)
+		holder.texture = PIECE_MOVE
+		holder.global_position = Vector2(i.y * CELL_WIDTH + (CELL_WIDTH / 2), -i.x * CELL_WIDTH - (CELL_WIDTH / 2))
+	
+func get_moves():
+	pass
+
 func _input(event):
 	if event is InputEventMouseButton && event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if is_mouse_out(): return
 			var var1 = int(floor(snapped(get_global_mouse_position().x, 0) / CELL_WIDTH))
 			var var2 = int(floor(abs(snapped(get_global_mouse_position().y, 0)) / CELL_WIDTH))
-			print(var1, "-", var2)
+			if !state && (white && board[var2][var1] > 0 || !white && board[var2][var1] < 0):
+				show_options()
+				selected_piece = Vector2(var2, var1)
+				state = true
 			
 func is_mouse_out():
 	if get_global_mouse_position().x < 0 || get_global_mouse_position().x > 432 || get_global_mouse_position().y > 0 || get_global_mouse_position().y < -432: return true
