@@ -1,7 +1,16 @@
-[gd_scene format=3 uid="uid://brir03mr0jy4y"]
+[gd_scene load_steps=2 format=3 uid="uid://brir03mr0jy4y"]
+
+[ext_resource type="PackedScene" uid="uid://dujddeh1515u2" path="res://Scenes/board.tscn" id="1_jjgbg"]
 
 [node name="Main" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(216, -216)
+scale = Vector2(3, 3)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Board" parent="." instance=ExtResource("1_jjgbg")]
+z_index = -10
+position = Vector2(216, -216)
+scale = Vector2(3, 3)

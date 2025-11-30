@@ -1,7 +1,9 @@
 extends Sprite2D
 
 const BOARD_SIZE = 8
-const CELL_WIDTH = 18
+var CELL_WIDTH = 54.0
+
+const TEXTURE_HOLDER = preload("res://Scenes/texture_holder.tscn")
 
 const BLACK_BISHOP = preload("res://Assets/black_bishop.png")
 const BLACK_KING = preload("res://Assets/black_king.png")
@@ -61,8 +63,27 @@ func _ready() -> void:
 	display_board()
 
 func display_board():
-	pass
+	for i in BOARD_SIZE:
+		for j in BOARD_SIZE:
+			var holder = TEXTURE_HOLDER.instantiate()
+			pieces.add_child(holder)
+			holder.global_position = Vector2(j * CELL_WIDTH + (CELL_WIDTH / 2), -i * CELL_WIDTH - (CELL_WIDTH / 2))
+			
+			match board[i][j]:
+				-6: holder.texture = BLACK_KING
+				-5: holder.texture = BLACK_QUEEN
+				-4: holder.texture = BLACK_ROOK
+				-3: holder.texture = BLACK_BISHOP
+				-2: holder.texture = BLACK_KNIGHT
+				-1: holder.texture = BLACK_PAWN
+				0: holder.texture = null
+				6: holder.texture = WHITE_KING
+				5: holder.texture = WHITE_QUEEN
+				4: holder.texture = WHITE_ROOK
+				3: holder.texture = WHITE_BISHOP
+				2: holder.texture = WHITE_KNIGHT
+				1: holder.texture = WHITE_PAWN
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+# func _process(delta: float) -> void:
+#	pass
