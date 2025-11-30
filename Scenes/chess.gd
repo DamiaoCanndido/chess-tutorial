@@ -84,6 +84,18 @@ func display_board():
 				2: holder.texture = WHITE_KNIGHT
 				1: holder.texture = WHITE_PAWN
 
+func _input(event):
+	if event is InputEventMouseButton && event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if is_mouse_out(): return
+			var var1 = int(floor(snapped(get_global_mouse_position().x, 0) / CELL_WIDTH))
+			var var2 = int(floor(abs(snapped(get_global_mouse_position().y, 0)) / CELL_WIDTH))
+			print(var1, "-", var2)
+			
+func is_mouse_out():
+	if get_global_mouse_position().x < 0 || get_global_mouse_position().x > 432 || get_global_mouse_position().y > 0 || get_global_mouse_position().y < -432: return true
+	return false
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 # func _process(delta: float) -> void:
 #	pass
