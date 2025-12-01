@@ -101,18 +101,32 @@ func show_dots():
 		holder.global_position = Vector2(i.y * CELL_WIDTH + (CELL_WIDTH / 2), -i.x * CELL_WIDTH - (CELL_WIDTH / 2))
 	
 func get_moves():
+	var _moves = []
 	match abs(board[selected_piece.x][selected_piece.y]):
 		1: print("pawn")
 		2: print("knight")
 		3: print("bishop")
-		4: print("rook")
+		4: _moves = get_rook_moves()
 		5: print("queen")
 		6: print("king")
-	return []
+	return _moves
 	
 func get_rook_moves():
 	var _moves = []
 	var _directions = [Vector2(0,1), Vector2(0,-1), Vector2(1,0), Vector2(-1,0)]
+	
+	for i in _directions:
+		var pos = selected_piece
+		pos += i
+		while is_valid_position(pos):
+			if is_empty(pos): 
+				_moves.append(pos)
+			elif is_enemy(pos):
+				_moves.append(pos)
+				break
+			else:
+				break
+			pos += i
 	return _moves
 	
 func is_valid_position(pos: Vector2):
