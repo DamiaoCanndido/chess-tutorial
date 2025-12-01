@@ -46,8 +46,8 @@ const PIECE_MOVE = preload("res://Assets/Piece_move.png")
 # WHITE_PAWN = 1
 
 var board: Array
-var white: bool
-var state: bool
+var white: bool = true
+var state: bool = false
 var moves = []
 var selected_piece: Vector2
 
@@ -101,7 +101,31 @@ func show_dots():
 		holder.global_position = Vector2(i.y * CELL_WIDTH + (CELL_WIDTH / 2), -i.x * CELL_WIDTH - (CELL_WIDTH / 2))
 	
 func get_moves():
-	pass
+	match abs(board[selected_piece.x][selected_piece.y]):
+		1: print("pawn")
+		2: print("knight")
+		3: print("bishop")
+		4: print("rook")
+		5: print("queen")
+		6: print("king")
+	return []
+	
+func get_rook_moves():
+	var _moves = []
+	var _directions = [Vector2(0,1), Vector2(0,-1), Vector2(1,0), Vector2(-1,0)]
+	return _moves
+	
+func is_valid_position(pos: Vector2):
+	if pos.x >= 0 && pos.x < BOARD_SIZE && pos.y >= 0 && pos.y < BOARD_SIZE: return true
+	return false
+	
+func is_empty(pos: Vector2):
+	if board[pos.x][pos.y] == 0: return true
+	return false
+		
+func is_enemy(pos: Vector2):
+	if white && board[pos.x][pos.y] < 0 || !white && board[pos.x][pos.y] > 0: return true
+	return false
 
 func _input(event):
 	if event is InputEventMouseButton && event.pressed:
@@ -110,8 +134,8 @@ func _input(event):
 			var var1 = int(floor(snapped(get_global_mouse_position().x, 0) / CELL_WIDTH))
 			var var2 = int(floor(abs(snapped(get_global_mouse_position().y, 0)) / CELL_WIDTH))
 			if !state && (white && board[var2][var1] > 0 || !white && board[var2][var1] < 0):
-				show_options()
 				selected_piece = Vector2(var2, var1)
+				show_options()
 				state = true
 			
 func is_mouse_out():
