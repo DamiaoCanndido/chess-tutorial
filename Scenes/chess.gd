@@ -103,12 +103,12 @@ func show_dots():
 func get_moves():
 	var _moves = []
 	match abs(board[selected_piece.x][selected_piece.y]):
-		1: print("pawn")
-		2: print("knight")
-		3: print("bishop")
+		1: _moves = get_pawn_moves()
+		2: _moves = get_knight_moves()
+		3: _moves = get_bishop_moves()
 		4: _moves = get_rook_moves()
-		5: print("queen")
-		6: print("king")
+		5: _moves = get_queen_moves()
+		6: _moves = get_king_moves()
 	return _moves
 	
 func get_rook_moves():
@@ -128,6 +128,103 @@ func get_rook_moves():
 				break
 			pos += i
 	return _moves
+	
+func get_bishop_moves():
+	var _moves = []
+	var _directions = [Vector2(1,1), Vector2(1,-1), Vector2(-1,1), Vector2(-1,-1)]
+	
+	for i in _directions:
+		var pos = selected_piece
+		pos += i
+		while is_valid_position(pos):
+			if is_empty(pos): 
+				_moves.append(pos)
+			elif is_enemy(pos):
+				_moves.append(pos)
+				break
+			else:
+				break
+			pos += i
+	return _moves
+	
+func get_queen_moves():
+	var _moves = []
+	var _directions = [Vector2(0,1), Vector2(0,-1), Vector2(1,0), Vector2(-1,0), Vector2(1,1), Vector2(1,-1), Vector2(-1,1), Vector2(-1,-1)]
+	
+	for i in _directions:
+		var pos = selected_piece
+		pos += i
+		while is_valid_position(pos):
+			if is_empty(pos): 
+				_moves.append(pos)
+			elif is_enemy(pos):
+				_moves.append(pos)
+				break
+			else:
+				break
+			pos += i
+	return _moves
+	
+func get_king_moves():
+	var _moves = []
+	var _directions = [Vector2(0,1), Vector2(0,-1), Vector2(1,0), Vector2(-1,0), Vector2(1,1), Vector2(1,-1), Vector2(-1,1), Vector2(-1,-1)]
+	
+	for i in _directions:
+		var pos = selected_piece + i
+		if is_valid_position(pos):
+			if is_empty(pos): 
+				_moves.append(pos)
+			elif is_enemy(pos):
+				_moves.append(pos)
+	return _moves
+	
+func get_knight_moves():
+	var _moves = []
+	var _directions = [Vector2(2,1), Vector2(2,-1), Vector2(1,2), Vector2(-1,2),
+	 Vector2(-2,1), Vector2(-2,-1), Vector2(-1,-2), Vector2(1,-2)]
+	
+	for i in _directions:
+		var pos = selected_piece + i
+		if is_valid_position(pos):
+			if is_empty(pos): 
+				_moves.append(pos)
+			elif is_enemy(pos):
+				_moves.append(pos)
+	return _moves
+	
+func get_pawn_moves():
+	var _moves = []
+	var _direction
+	var is_first_move = false
+	
+	if white: 
+		_direction = Vector2(1,0)
+	else:
+		_direction = Vector2(-1,0)
+	
+	if white && selected_piece.x == 1 || !white && selected_piece.x == 6:
+		is_first_move = true
+		
+	var pos = selected_piece + _direction
+	if is_empty(pos):
+		_moves.append(pos)
+		
+	pos = selected_piece + Vector2(_direction.x, 1)
+	if is_valid_position(pos):
+		if is_enemy(pos):
+			_moves.append(pos)
+			
+	pos = selected_piece + Vector2(_direction.x, -1)
+	if is_valid_position(pos):
+		if is_enemy(pos):
+			_moves.append(pos)
+			
+	pos = selected_piece + _direction * 2
+	if is_first_move && is_empty(pos) && is_empty(selected_piece + _direction):
+		_moves.append(pos)
+		
+	return _moves
+	
 	
 func is_valid_position(pos: Vector2):
 	if pos.x >= 0 && pos.x < BOARD_SIZE && pos.y >= 0 && pos.y < BOARD_SIZE: return true
