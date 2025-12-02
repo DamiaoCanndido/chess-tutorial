@@ -65,6 +65,9 @@ func _ready() -> void:
 	display_board()
 
 func display_board():
+	for child in pieces.get_children():
+		child.queue_free()
+		
 	for i in BOARD_SIZE:
 		for j in BOARD_SIZE:
 			var holder = TEXTURE_HOLDER.instantiate()
@@ -85,6 +88,11 @@ func display_board():
 				3: holder.texture = WHITE_BISHOP
 				2: holder.texture = WHITE_KNIGHT
 				1: holder.texture = WHITE_PAWN
+				
+	if white:
+		turn.texture = TURN_WHITE
+	else:
+		turn.texture = TURN_BLACK
 
 func show_options():
 	moves = get_moves()
@@ -99,6 +107,21 @@ func show_dots():
 		dots.add_child(holder)
 		holder.texture = PIECE_MOVE
 		holder.global_position = Vector2(i.y * CELL_WIDTH + (CELL_WIDTH / 2), -i.x * CELL_WIDTH - (CELL_WIDTH / 2))
+
+func delete_dots():
+	for child in dots.get_children():
+		child.queue_free()
+		
+func set_move(var2, var1):
+	for i in moves:
+		if i.x == var2 && i.y == var1:
+			board[var2][var1] = board[selected_piece.x][selected_piece.y]
+			board[selected_piece.x][selected_piece.y] = 0
+			white = !white
+			display_board()
+			break
+	delete_dots()
+	state = false
 	
 func get_moves():
 	var _moves = []
@@ -248,6 +271,8 @@ func _input(event):
 				selected_piece = Vector2(var2, var1)
 				show_options()
 				state = true
+			elif state:
+				set_move(var2, var1)
 			
 func is_mouse_out():
 	if get_global_mouse_position().x < 0 || get_global_mouse_position().x > 432 || get_global_mouse_position().y > 0 || get_global_mouse_position().y < -432: return true
