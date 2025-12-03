@@ -55,6 +55,13 @@ var selected_piece: Vector2
 
 var promotion_square = null
 
+var white_king = false
+var black_king = false
+var white_rook_left = false
+var white_rook_right = false
+var black_rook_left = false
+var black_rook_right = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	board.append([4, 2, 3, 5, 6, 3, 2, 4])
@@ -133,6 +140,42 @@ func set_move(var2, var1):
 					if i.x == 7: promote(i)
 				-1: 
 					if i.x == 0: promote(i)
+				4:
+					if selected_piece.x == 0 && selected_piece.y == 0:
+						white_rook_left = true
+					elif selected_piece.x == 0 && selected_piece.y == 7:
+						white_rook_left = true
+				-4:
+					if selected_piece.x == 7 && selected_piece.y == 0:
+						black_rook_left = true
+					elif selected_piece.x == 7 && selected_piece.y == 7:
+						black_rook_left = true
+				6:
+					if selected_piece.x == 0 && selected_piece.y == 4:
+						white_king = true
+						if i.y == 2:
+							white_rook_left = true
+							white_rook_right = true
+							board[0][0] = 0
+							board[0][3] = 4
+						elif i.y == 6:
+							white_rook_left = true
+							white_rook_right = true
+							board[0][7] = 0
+							board[0][5] = 4
+				-6:
+					if selected_piece.x == 7 && selected_piece.y == 4:
+						white_king = true
+						if i.y == 2:
+							black_rook_left = true
+							black_rook_right = true
+							board[7][0] = 0
+							board[7][3] = -4
+						elif i.y == 6:
+							black_rook_left = true
+							black_rook_right = true
+							board[7][7] = 0
+							board[7][5] = -4
 			
 			board[var2][var1] = board[selected_piece.x][selected_piece.y]
 			board[selected_piece.x][selected_piece.y] = 0
@@ -218,6 +261,18 @@ func get_king_moves():
 				_moves.append(pos)
 			elif is_enemy(pos):
 				_moves.append(pos)
+				
+	if white && !white_king:
+		if !white_rook_left && is_empty(Vector2(0,1)) && is_empty(Vector2(0,2)) && is_empty(Vector2(0,3)):
+			_moves.append(Vector2(0,2))	
+		if !white_rook_right && is_empty(Vector2(0,5)) && is_empty(Vector2(0,6)):
+			_moves.append(Vector2(0,6))	
+	elif !white && !black_king:
+		if !black_rook_left && is_empty(Vector2(7,1)) && is_empty(Vector2(7,2)) && is_empty(Vector2(7,3)):
+			_moves.append(Vector2(7,2))	
+		if !black_rook_right && is_empty(Vector2(7,5)) && is_empty(Vector2(7,6)):
+			_moves.append(Vector2(7,6))	
+		
 	return _moves
 	
 func get_knight_moves():
