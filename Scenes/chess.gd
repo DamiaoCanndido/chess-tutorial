@@ -195,7 +195,7 @@ func set_move(var2, var1):
 							black_rook_right = true
 							board[7][7] = 0
 							board[7][5] = -4
-					white_king_pos = i
+					black_king_pos = i
 			if !just_now:
 				en_passant = null
 			board[var2][var1] = board[selected_piece.x][selected_piece.y]
