@@ -184,7 +184,7 @@ func set_move(var2, var1):
 					white_king_pos = i
 				-6:
 					if selected_piece.x == 7 && selected_piece.y == 4:
-						white_king = true
+						black_king = true
 						if i.y == 2:
 							black_rook_left = true
 							black_rook_right = true
