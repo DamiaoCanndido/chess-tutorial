@@ -205,6 +205,15 @@ func set_move(var2, var1):
 			break
 	delete_dots()
 	state = false
+	if (selected_piece.x != var2 && selected_piece.y != var1) && (white && board[var2][var1] > 0 || !white && board[var2][var1] < 0):
+		selected_piece = Vector2(var2, var1)
+		show_options()
+		state = true
+	elif is_stalemate():
+		if white && is_in_check(white_king_pos) || !white && is_in_check(black_king_pos):
+			print("Checkmate!")
+		else:
+			print("Draw!")
 	
 func get_moves(selected: Vector2):
 	var _moves = []
@@ -497,6 +506,19 @@ func is_in_check(king_pos: Vector2):
 				return true
 				
 	return false
+
+func is_stalemate():
+	if white:
+		for i in BOARD_SIZE:
+			for j in BOARD_SIZE:
+				if board[i][j] > 0:
+					if get_moves(Vector2(i, j)) != []: return false
+	else:
+		for i in BOARD_SIZE:
+			for j in BOARD_SIZE:
+				if board[i][j] < 0:
+					if get_moves(Vector2(i, j)) != []: return false
+	return true
 		
 func _input(event):
 	if event is InputEventMouseButton && event.pressed && promotion_square == null:
@@ -512,8 +534,8 @@ func _input(event):
 				set_move(var2, var1)
 			
 func is_mouse_out():
-	if get_global_mouse_position().x < 0 || get_global_mouse_position().x > 432 || get_global_mouse_position().y > 0 || get_global_mouse_position().y < -432: return true
-	return false
+	if get_rect().has_point(to_local(get_global_mouse_position())): return false
+	return true
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 # func _process(delta: float) -> void:
