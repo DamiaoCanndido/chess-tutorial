@@ -67,6 +67,11 @@ var en_passant = null
 var white_king_pos = Vector2(0,4)
 var black_king_pos = Vector2(7,4)
 
+var fifty_move_rule = 0
+
+var unique_board_moves: Array = []
+var amount_of_same: Array = []
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	board.append([4, 2, 3, 5, 6, 3, 2, 4])
@@ -141,8 +146,11 @@ func set_move(var2, var1):
 	var just_now = false
 	for i in moves:
 		if i.x == var2 && i.y == var1:
+			fifty_move_rule += 1
+			if is_enemy(Vector2(var2, var1)): fifty_move_rule = 0
 			match board[selected_piece.x][selected_piece.y]:
 				1:
+					fifty_move_rule = 0
 					if i.x == 7: promote(i)
 					if i.x == 3 && selected_piece.x == 1:
 						en_passant = i
@@ -151,6 +159,7 @@ func set_move(var2, var1):
 						if en_passant.y == i.y && selected_piece.y != i.y && en_passant.x == selected_piece.x:
 							board[en_passant.x][en_passant.y] = 0
 				-1: 
+					fifty_move_rule = 0
 					if i.x == 0: promote(i)
 					if i.x == 4 && selected_piece.x == 6:
 						en_passant = i
@@ -201,6 +210,7 @@ func set_move(var2, var1):
 			board[var2][var1] = board[selected_piece.x][selected_piece.y]
 			board[selected_piece.x][selected_piece.y] = 0
 			white = !white
+			threefold_position(board)
 			display_board()
 			break
 	delete_dots()
@@ -213,7 +223,10 @@ func set_move(var2, var1):
 		if white && is_in_check(white_king_pos) || !white && is_in_check(black_king_pos):
 			print("Checkmate!")
 		else:
-			print("Draw!")
+			print("Draw by stalemate!")
+	
+	if fifty_move_rule == 50: print("Draw by 50 moves rule")
+	elif insuficient_material(): print("Draw by insuficient material")
 	
 func get_moves(selected: Vector2):
 	var _moves = []
@@ -519,6 +532,32 @@ func is_stalemate():
 				if board[i][j] < 0:
 					if get_moves(Vector2(i, j)) != []: return false
 	return true
+
+func insuficient_material():
+	var white_piece = 0
+	var black_piece = 0
+	for i in BOARD_SIZE:
+			for j in BOARD_SIZE:
+				match board[i][j]:
+					2, 3:
+						if white_piece == 0: white_piece += 1
+						else: return false
+					-2, -3:
+						if black_piece == 0: black_piece += 1
+						else: return false
+					6, -6, 0: pass
+					_:
+						return false 
+	return true
+
+func threefold_position(var1: Array):
+	for i in unique_board_moves.size():
+		if var1 == unique_board_moves[i]:
+			amount_of_same[i] += 1
+			if amount_of_same[i] >= 3: print("Draw by threefold repetition")
+			return
+	unique_board_moves.append(var1.duplicate(true))
+	amount_of_same.append(1)
 		
 func _input(event):
 	if event is InputEventMouseButton && event.pressed && promotion_square == null:
